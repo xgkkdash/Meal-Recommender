@@ -3,10 +3,9 @@
 ## Business critical components
 Data source and destination, compute, storage, rules and exception.
 - HTTP server to listen for sync request from user
-- Database to store user info and foods
-- Rest Client to get food choices
+- Database to store user_info, foods and plans
+- Algorithm to get each day required energy by user_info
 - Algorithm to generate meal plan based on user info and food choices
-- Rest Client to order take-out food from 3rd-party platform
 
 
 ## Interface
@@ -18,8 +17,9 @@ Data source and destination, compute, storage, rules and exception.
 
 ## Language, Frameworks and tools
 - Python 3.8
-- Flask/Django for web_server
+- FastAPI for web_server-backend
 - MongoDB for database
+- React/Vue for frontend
 
 
 ## Metrics and logs
@@ -48,10 +48,6 @@ See `models.py` for details.
 - On `profile` request, could be requested after user sign_in, provide a view to let user update his info.
 - On `get_plan` request, check DB first, if there is not any plan for this user, generate a weekly meal plan for him, and save this plan to DB
 
-#### Rest client
-- Timer `get_foods` to rest get foods from 3rd-party platform, update DB.foods by latest results
-- Timer `auto_order` to rest order meal from 3rd-party platform, according plans saved in DB
-
 #### Recommender (algorithm)
 - `decider`: generate a weekly meal plan based on given user_info and food_choices
 
@@ -74,12 +70,5 @@ See `models.py` for details.
 
 ## Technical Challenges
 
-### Get data from app
-- many food info are from app but not website, should use proper way to get these 
-
-### Auto payment
-- needs to find out what framework is required to implement auto payment
-
-### Sync of foods
-- local food choices may not be exactly the same with remote
- 
+### Frontend Interaction
+- user may want to interact with web_app to modify their basic_info or weekly_plan in real time

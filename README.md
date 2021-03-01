@@ -17,10 +17,9 @@ When users want to eat more healthy and save their time from choosing what to ea
 
 ## What does it do?
 - Record base info (name/gender/age/location/height/weight/eating_habits/expectation) of users.
-- Get alternative food choices from 3rd-party take-out food providers
-- Analysis nutrition of each food
+- Record food choices and nutrition of each food
+- Analysis energy a given person needs every day
 - Generate weekly plan for users about what to eat for each meal
-- Auto order scheduled food from 3rd-party platform before each meal time
 
 
 ## How do we know if we are doing the right or wrong?
@@ -28,8 +27,9 @@ When users want to eat more healthy and save their time from choosing what to ea
 
 
 ## What challenges do we have now?
-- Alternative food choices may be different in different daytime
-- Auto payment to 3rd-party platform
+- Data source for nutrition of each food
+- Data source for relation between energy and user_info
+- Need to learn more about frontend frameworks and choose a proper one
 
 
 ## How much time do we have to deliver a solution?
