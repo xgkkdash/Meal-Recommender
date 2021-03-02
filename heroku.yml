@@ -2,4 +2,4 @@ build:
   docker:
     web: backend/Dockerfile
 run:
-  web: uvicorn main:app --reload --host 0.0.0.0
+  web: python main.py
