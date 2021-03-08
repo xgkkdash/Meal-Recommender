@@ -1,6 +1,8 @@
 import codecs
 import os
+from datetime import datetime, timedelta
 
+import jwt
 import motor.motor_asyncio
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
@@ -10,6 +12,11 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import models
 from database import find_user, insert_user
 from schemas import UserCreate, User
+
+
+SECRET_KEY = os.environ.get('SECRET_KEY', 'my_secret_key')
+ALGORITHM = os.environ.get('ALGORITHM', "HS256")
+TOKEN_EXPIRE_MINUTES = os.environ.get("TOKEN_EXPIRE_MINUTES", 30)
 
 
 def init_db():
@@ -50,7 +57,21 @@ async def user_sign_up(user: UserCreate):
 
 @app.post("/login")
 async def user_login(form_data: OAuth2PasswordRequestForm = Depends()):
-    pass
+    user = await find_user(db, form_data.username)
+    if not user or user.password != form_data.password:
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = _generate_token(user.account_id)
+    return {"access_token": access_token}
+
+
+async def _generate_token(username):
+    to_encode = {"sub": username, "exp": datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRE_MINUTES)}
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 
 async def _get_user_by_token(token: str = Depends(oauth2_scheme)):
