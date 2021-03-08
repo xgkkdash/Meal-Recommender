@@ -3,8 +3,11 @@ import os
 
 import motor.motor_asyncio
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.responses import HTMLResponse
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+from schemas import UserCreate, User
 
 
 def init_db():
@@ -18,6 +21,8 @@ def init_db():
 
 db = init_db()
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 app = FastAPI()
 
 
@@ -26,6 +31,30 @@ def read_root():
     with codecs.open("hello_world.html", "r", "utf-8") as f:
         html_content = f.read()
         return HTMLResponse(content=html_content, status_code=200)
+
+
+@app.post("/signup")
+async def user_sign_up(user: UserCreate):
+    pass
+
+
+@app.post("/login")
+async def user_login(form_data: OAuth2PasswordRequestForm = Depends()):
+    pass
+
+
+async def _get_user_by_token(token: str = Depends(oauth2_scheme)):
+    pass
+
+
+@app.get("/users/me/", response_model=User)
+async def get_self_data(current_user: User = Depends(_get_user_by_token)):
+    pass
+
+
+@app.get("/users/me/plan/")
+async def get_self_plan(current_user: User = Depends(_get_user_by_token)):
+    pass
 
 
 if __name__ == '__main__':
