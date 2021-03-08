@@ -3,10 +3,12 @@ import os
 
 import motor.motor_asyncio
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
+import models
+from database import find_user, insert_user
 from schemas import UserCreate, User
 
 
@@ -35,7 +37,15 @@ def read_root():
 
 @app.post("/signup")
 async def user_sign_up(user: UserCreate):
-    pass
+    exist_user = await find_user(db, user.account_id)
+    if exist_user:
+        raise HTTPException(status_code=400, detail="user id already existed")
+    else:
+        result = await insert_user(db, models.User.from_user_base(user))
+        if result and result.acknowledged:
+            return User(**vars(user))
+        else:
+            raise HTTPException(status_code=400, detail="insert new user failed")
 
 
 @app.post("/login")
