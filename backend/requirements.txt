@@ -4,3 +4,4 @@ uvicorn
 motor
 pymongo
 pytest-asyncio
+pydantic
