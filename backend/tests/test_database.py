@@ -28,8 +28,8 @@ async def test_insert_user(test_db):
 
 async def test_get_user(test_db):
     user_a = User("account1", "pwd1", "a@a")
-    result = await find_user(test_db, user_a)
+    result = await find_user(test_db, user_a.account_id)
     assert not result
     await insert_user(test_db, user_a)
-    result = await find_user(test_db, user_a)
+    result = await find_user(test_db, user_a.account_id)
     assert result

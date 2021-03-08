@@ -8,8 +8,8 @@ async def insert_user(db, user: User):
     return doc
 
 
-async def find_user(db, user: User):
-    doc = await db.users.find_one({"account_id": user.account_id})
+async def find_user(db, user_id):
+    doc = await db.users.find_one({"account_id": user_id})
     if doc:
         doc.pop("_id", None)
     return User(**doc) if doc else None
