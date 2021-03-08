@@ -1,3 +1,6 @@
 pytest
 fastapi
 uvicorn
+motor
+pymongo
+pytest-asyncio
