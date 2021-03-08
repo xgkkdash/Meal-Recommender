@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from schemas import UserBase
+
 
 @dataclass
 class User:
@@ -18,3 +20,7 @@ class User:
     @property
     def info_completed(self) -> bool:
         return all(v for v in self.__dict__.values())
+
+    @classmethod
+    def from_user_base(cls, user_base: UserBase):
+        return cls(**vars(user_base))
