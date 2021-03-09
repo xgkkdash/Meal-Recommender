@@ -47,7 +47,7 @@ def read_root():
 async def user_sign_up(user: UserCreate):
     exist_user = await find_user(db, user.account_id)
     if exist_user:
-        raise HTTPException(status_code=400, detail="user id already existed")
+        raise HTTPException(status_code=409, detail="user id already existed")
     else:
         result = await insert_user(db, models.User.from_user_base(user))
         if result and result.acknowledged:
