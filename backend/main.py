@@ -65,7 +65,7 @@ async def user_login(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = _generate_token(user.account_id)
+    access_token = await _generate_token(user.account_id)
     return {"access_token": access_token}
 
 
@@ -83,7 +83,7 @@ async def _get_user_by_token(token: str = Depends(oauth2_scheme)):
             raise HTTPException(status_code=401, detail="Cannot find user from token info")
     except PyJWTError:
         raise HTTPException(status_code=401, detail="Exception happened when decode token")
-    user = find_user(db, username)
+    user = await find_user(db, username)
     if not user:
         raise HTTPException(status_code=401, detail="User does not exist")
     return User(**vars(user))
