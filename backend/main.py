@@ -86,12 +86,12 @@ async def _get_user_by_token(token: str = Depends(oauth2_scheme)):
     user = find_user(db, username)
     if not user:
         raise HTTPException(status_code=401, detail="User does not exist")
-    return user
+    return User(**vars(user))
 
 
 @app.get("/users/me/", response_model=User)
 async def get_self_data(current_user: User = Depends(_get_user_by_token)):
-    pass
+    return current_user
 
 
 @app.get("/users/me/plan/")
