@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 import jwt
 import motor.motor_asyncio
 import uvicorn
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from jwt import PyJWTError
 
 import models
@@ -30,8 +30,6 @@ def init_db():
 
 
 db = init_db()
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI()
 
@@ -75,7 +73,7 @@ async def _generate_token(username):
     return encoded_jwt
 
 
-async def _get_user_by_token(token: str = Depends(oauth2_scheme)):
+async def _get_user_by_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
@@ -89,8 +87,12 @@ async def _get_user_by_token(token: str = Depends(oauth2_scheme)):
     return User(**vars(user))
 
 
-@app.get("/users/me/", response_model=User)
-async def get_self_data(current_user: User = Depends(_get_user_by_token)):
+@app.get("/users/me", response_model=User)
+async def get_self_data(req: Request):
+    auth_token = req.headers.get("authorization")
+    if not auth_token:
+        raise HTTPException(status_code=401, detail="Auth Required")
+    current_user = await _get_user_by_token(auth_token)
     return current_user
 
 
