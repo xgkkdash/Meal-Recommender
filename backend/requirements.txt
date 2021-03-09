@@ -6,3 +6,4 @@ pymongo
 pytest-asyncio
 pydantic
 PyJWT
+python-multipart

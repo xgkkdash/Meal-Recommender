@@ -8,6 +8,7 @@ import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jwt import PyJWTError
 
 import models
 from database import find_user, insert_user
@@ -75,7 +76,17 @@ async def _generate_token(username):
 
 
 async def _get_user_by_token(token: str = Depends(oauth2_scheme)):
-    pass
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Cannot find user from token info")
+    except PyJWTError:
+        raise HTTPException(status_code=401, detail="Exception happened when decode token")
+    user = find_user(db, username)
+    if not user:
+        raise HTTPException(status_code=401, detail="User does not exist")
+    return user
 
 
 @app.get("/users/me/", response_model=User)
