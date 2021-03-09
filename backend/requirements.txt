@@ -7,3 +7,4 @@ pytest-asyncio
 pydantic
 PyJWT
 python-multipart
+requests
