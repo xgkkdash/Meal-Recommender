@@ -30,7 +30,3 @@ def get_database():
 def connect_db():
     db_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
     database['client'] = db_client[settings.DB_NAME]
-
-
-# db_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
-# database = db_client[settings.DB_NAME]
