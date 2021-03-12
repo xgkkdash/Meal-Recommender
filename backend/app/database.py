@@ -20,5 +20,17 @@ async def drop_users(db):
     result = await db.users.drop()
     return result
 
-db_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
-database = db_client[settings.DB_NAME]
+database = {"client": None}
+
+
+def get_database():
+    return database.get('client')
+
+
+def connect_db():
+    db_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
+    database['client'] = db_client[settings.DB_NAME]
+
+
+# db_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
+# database = db_client[settings.DB_NAME]

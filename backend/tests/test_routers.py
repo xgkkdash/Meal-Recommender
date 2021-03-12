@@ -4,15 +4,16 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.database import database
+from app.database import connect_db, get_database
 from app.schemas import User
 
 
 @pytest.fixture
 def client():
+    connect_db()
     client = TestClient(app)
     yield client
-    database.users.drop()
+    get_database().users.drop()
 
 
 @pytest.fixture()
