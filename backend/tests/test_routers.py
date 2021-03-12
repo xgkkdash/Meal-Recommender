@@ -3,14 +3,16 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi.testclient import TestClient
 
-from main import app
-from models import User
+from app.main import app
+from app.database import database
+from app.schemas import User
 
 
 @pytest.fixture
 def client():
     client = TestClient(app)
     yield client
+    database.users.drop()
 
 
 @pytest.fixture()
@@ -21,9 +23,11 @@ def user():
 def test_sign_up(client, user):
     response = client.post("/signup", json=vars(user))
     assert response.status_code == 200
+    assert response.json() == user.dict()
 
 
 def test_login(client, user):
+    test_sign_up(client, user)
     form_data = OAuth2PasswordRequestForm(grant_type="password", username=user.account_id, password=user.password, scope="")
     response = client.post("/login", headers={"Content-Type": "application/x-www-form-urlencoded"}, data=vars(form_data))
     assert response.status_code == 200
@@ -34,7 +38,7 @@ def test_login(client, user):
 
 def test_auth(client, user):
     token = test_login(client, user)
-    headers = {"Authorization": token}
+    headers = {"token": token}
     response = client.get("/users/me", headers=headers)
     assert response.status_code == 200
-    assert response.json()
+    assert response.json() == user.dict()

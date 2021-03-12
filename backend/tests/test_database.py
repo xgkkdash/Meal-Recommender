@@ -1,35 +1,43 @@
-import os
 import pytest
 
 import motor.motor_asyncio
-from database import *
-from models import User
+from app.config import settings
+from app.database import insert_user, find_user, drop_users
+from app.schemas import User
 
 pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture()
 def test_db():
-    db_name = os.environ.get('DB_NAME', 'MR_TEST')
-    db_host = os.environ.get('DB_HOST', 'localhost')
-    db_port = os.environ.get('DB_PORT', '27017')
-    db_url = "mongodb://" + db_host + ":" + str(db_port) + "/"
-    db_client = motor.motor_asyncio.AsyncIOMotorClient(db_url)
-    db = db_client[db_name]
+    client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
+    db = client[settings.DB_NAME]
     yield db
     db.users.drop()
 
 
-async def test_insert_user(test_db):
-    user_a = User("account1", "pwd1", "a@a")
-    result = await insert_user(test_db, user_a)
+@pytest.fixture()
+def user():
+    return User(account_id="account1", password="pwd1", email="a@a")
+
+
+async def test_insert_and_find_user(test_db, user):
+
+    result = await find_user(test_db, user.account_id)
+    assert not result
+
+    result = await insert_user(test_db, user)
     assert result and result.acknowledged
 
-
-async def test_get_user(test_db):
-    user_a = User("account1", "pwd1", "a@a")
-    result = await find_user(test_db, user_a.account_id)
-    assert not result
-    await insert_user(test_db, user_a)
-    result = await find_user(test_db, user_a.account_id)
+    result = await find_user(test_db, user.account_id)
     assert result
+    assert result == user
+
+
+async def test_drop_users(test_db, user):
+    result = await insert_user(test_db, user)
+    assert result and result.acknowledged
+
+    await drop_users(test_db)
+    result = await find_user(test_db, user.account_id)
+    assert not result

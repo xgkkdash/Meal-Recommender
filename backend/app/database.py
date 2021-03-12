@@ -1,10 +1,11 @@
-from dataclasses import asdict
+import motor.motor_asyncio
 
-from models import User
+from app.config import settings
+from app.schemas import User
 
 
 async def insert_user(db, user: User):
-    doc = await db.users.insert_one(asdict(user))
+    doc = await db.users.insert_one(user.dict())
     return doc
 
 
@@ -18,3 +19,6 @@ async def find_user(db, user_id):
 async def drop_users(db):
     result = await db.users.drop()
     return result
+
+db_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
+database = db_client[settings.DB_NAME]
