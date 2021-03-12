@@ -4,10 +4,7 @@ from app.database import find_user, database
 from app.schemas import User
 from app.utils import username_from_token
 
-router = APIRouter(
-    tags=["items"],
-    responses={404: {"description": "Not found"}}
-)
+router = APIRouter(tags=["items"])
 
 
 @router.get("/")

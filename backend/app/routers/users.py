@@ -5,10 +5,7 @@ from app.database import find_user, insert_user, database
 from app.schemas import User
 from app.utils import generate_token
 
-router = APIRouter(
-    tags=["users"],
-    responses={404: {"description": "Not found"}}
-)
+router = APIRouter(tags=["users"])
 
 
 @router.post("/signup")
