@@ -1,25 +1,14 @@
 version: "2"
 services:
-  backend:
+  web:
     build:
       context: ./backend
     environment:
       - DB_NAME=MR_PROD
-      - DB_HOST=mongodb
-      - DB_PORT=27014
-    container_name: "backend"
-    volumes:
-      - ./backend:/app
-    ports:
-      - 8000:8000
     depends_on:
-      - mongodb
-    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
-  mongodb:
+      - db
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+  db:
     image: "mongo"
-    container_name: "mongodb"
     volumes:
       - ./mongodb:/data/db
-    ports:
-      - 27014:27014
-    command: mongod --port 27014
