@@ -5,6 +5,7 @@ services:
       context: ./backend
     environment:
       - DB_NAME=MR_PROD
+      - MONGODB_URI=mongodb://db:27017/
     depends_on:
       - db
     ports:
