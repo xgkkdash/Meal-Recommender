@@ -3,9 +3,8 @@ services:
   web:
     build:
       context: ./backend
-    environment:
-      - DB_NAME=MR_PROD
-      - MONGODB_URI=mongodb://db:27017/
+    env_file:
+      - ./prod.env
     depends_on:
       - db
     ports:
