@@ -3,12 +3,16 @@ from fastapi import FastAPI
 
 from app.config import settings
 from app.database import connect_db
-from app.routers import items, users
+from app.routers import users
 
 app = FastAPI()
 app.include_router(users.router)
-app.include_router(items.router)
 app.add_event_handler("startup", connect_db)
+
+
+@app.get("/")
+def root():
+    return "Welcome to Meal_Recommender!"
 
 
 if __name__ == '__main__':
