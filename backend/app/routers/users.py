@@ -8,7 +8,7 @@ from app.utils import generate_token, username_from_token
 router = APIRouter(tags=["users"])
 
 
-async def _find_user_by_token(token: str = Header(...), db=Depends(get_database)):
+async def _find_user_by_token(id: str, token: str = Header(...), db=Depends(get_database)):
     if not token:
         raise HTTPException(status_code=401, detail="Auth Required")
     username = await username_from_token(token)
@@ -18,6 +18,8 @@ async def _find_user_by_token(token: str = Header(...), db=Depends(get_database)
     user = await find_user(db, username)
     if not user:
         raise HTTPException(status_code=401, detail="User does not exist")
+    if user.account_id != id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     return user
 
 
@@ -44,7 +46,15 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db=Depends(get
 
 
 @router.get("/users/{id}", response_model=User)
-async def get_user(id: str, user=Depends(_find_user_by_token)):
-    if user.account_id != id:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+async def get_user(user=Depends(_find_user_by_token)):
     return user
+
+
+@router.get("/users/{id}/bmi")
+async def get_bmi(user=Depends(_find_user_by_token)):
+    if not user.height or not user.weight:
+        raise HTTPException(status_code=400, detail="Please complete user info first")
+    height = user.height / 100  # change cm into m
+    bmi = user.weight / pow(height, 2)
+    bmi = round(bmi, 4)
+    return {"BMI": bmi}
