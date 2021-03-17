@@ -14,5 +14,3 @@ services:
     image: "mongo"
     volumes:
       - ./mongodb:/data/db
-    ports:
-      - 27017
