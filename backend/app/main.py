@@ -3,10 +3,11 @@ from fastapi import FastAPI
 
 from app.config import settings
 from app.database import connect_db
-from app.routers import users
+from app.routers import users, profile
 
 app = FastAPI()
 app.include_router(users.router)
+app.include_router(profile.router)
 app.add_event_handler("startup", connect_db)
 
 
