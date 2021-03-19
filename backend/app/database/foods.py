@@ -22,8 +22,9 @@ async def find_all_foods(db):
 
 
 async def update_food(db, food: Food):
-    doc = await db.foods.replace_one(food.dict())
-    return doc
+    old_doc = await db.foods.find_one({"name": food.name})
+    result = await db.foods.replace_one({'_id': old_doc['_id']}, food.dict())
+    return result
 
 
 async def delete_food(db, food_name):

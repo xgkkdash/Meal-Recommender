@@ -22,8 +22,9 @@ async def find_all_users(db):
 
 
 async def update_user(db, user: User):
-    doc = await db.users.replace_one(user.dict())
-    return doc
+    old_doc = await db.users.find_one({"account_id": user.account_id})
+    result = await db.users.replace_one({'_id': old_doc['_id']}, user.dict())
+    return result
 
 
 async def delete_user(db, user_id):
