@@ -6,7 +6,7 @@ from app.database.users import find_user, insert_user
 from app.schemas import User
 from app.utils import generate_token
 
-router = APIRouter(tags=["register/login"])
+router = APIRouter(tags=["login"])
 
 
 @router.post("/register")

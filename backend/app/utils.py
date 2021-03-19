@@ -1,7 +1,12 @@
 import jwt
 
 from datetime import datetime, timedelta
+
+from fastapi import Header, Depends, HTTPException
+
 from app.config import settings
+from app.database import get_database
+from app.database.users import find_user
 
 
 async def generate_token(username: str):
@@ -12,3 +17,16 @@ async def generate_token(username: str):
 async def username_from_token(token: str):
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     return payload.get("username", None)
+
+
+async def get_user_by_token(token: str = Header(...), db=Depends(get_database)):
+    if not token:
+        raise HTTPException(status_code=401, detail="Auth Required")
+    username = await username_from_token(token)
+    if not username:
+        raise HTTPException(status_code=401, detail="Cannot find username from token")
+
+    user = await find_user(db, username)
+    if not user:
+        raise HTTPException(status_code=401, detail="User does not exist")
+    return user
