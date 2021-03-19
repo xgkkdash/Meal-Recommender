@@ -8,16 +8,16 @@ from app.utils import get_user_by_token
 router = APIRouter(tags=["foods"])
 
 
-@router.get("/foods")
-async def get_all_foods(user=Depends(get_user_by_token), db=Depends(get_database)):
+@router.get("/foods", dependencies=[Depends(get_user_by_token)])
+async def get_all_foods(db=Depends(get_database)):
     all_foods = await find_all_foods(db)
     if not all_foods:
         raise HTTPException(status_code=400, detail="Not Found")
     return all_foods
 
 
-@router.get("/foods/{name}")
-async def get_food(name: str, user=Depends(get_user_by_token), db=Depends(get_database)):
+@router.get("/foods/{name}", dependencies=[Depends(get_user_by_token)])
+async def get_food(name: str, db=Depends(get_database)):
     food = await find_food(db, name)
     if not food:
         raise HTTPException(status_code=400, detail="Not Found")
