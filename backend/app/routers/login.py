@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.database import find_user, insert_user, get_database
+from app.database import get_database
+from app.database.users import find_user, insert_user
 from app.schemas import User
 from app.utils import generate_token
 
-router = APIRouter(tags=["register and login"])
+router = APIRouter(tags=["register/login"])
 
 
 @router.post("/register")
