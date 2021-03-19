@@ -92,6 +92,11 @@ GET http://api.meal-recommender.com/v1/plans
 - get all plans by a given user (detected by auth token)
 - a user can only get his own plans, cannot get others' plan
 
+### Get a plan by user_id and plan_id
+GET http://api.meal-recommender.com/v1/plans/{plan_id}
+- get a plan by a given user (detected by auth token) and plan_id
+- a user can only get his own plans, cannot get others' plan
+
 ### Get all users
 GET http://api.meal-recommender.com/v1/users
 - get all registered users from database
