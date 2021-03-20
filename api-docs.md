@@ -37,6 +37,15 @@ api.meal-recommender.com/v1
 - lunch (Food)
 - dinner (Food)
 
+## Role-Based Access Control
+- first admin user: config in env file or manually add to database (manually add is preferred)
+- new registered user will be auto given role as regular_user
+- admin user can login through url /login/admin
+- admin user can upgrade another user from regular to admin through POST /user-roles
+- admin user can degrade himself to regular user PUT /user-roles
+- put user role into auth token
+- handle request by role_based control
+
 ## Endpoints:
 (all endpoint requires authentication except register and login)
 #### Authentication
