@@ -7,10 +7,12 @@ from fastapi import Header, Depends, HTTPException
 from app.config import settings
 from app.database import get_database
 from app.database.users import find_user
+from app.schemas import UserRole
 
 
-async def generate_token(username: str):
-    to_encode = {"username": username, "exp": datetime.utcnow() + timedelta(minutes=settings.TOKEN_EXPIRE_MINUTES)}
+async def generate_token(user_role: UserRole):
+    to_encode = {"username": user_role.user_id, "role": user_role.role_name,
+                 "exp": datetime.utcnow() + timedelta(minutes=settings.TOKEN_EXPIRE_MINUTES)}
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
