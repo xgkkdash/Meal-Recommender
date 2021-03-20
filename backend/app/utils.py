@@ -16,19 +16,21 @@ async def generate_token(user_role: UserRole):
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-async def username_from_token(token: str):
+async def user_role_from_token(token: str):
     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    return payload.get("username", None)
+    user_name = payload.get("username", None)
+    role = payload.get("role", None)
+    return UserRole(user_id=user_name, role_name=role) if user_name and role else None
 
 
 async def get_user_by_token(token: str = Header(...), db=Depends(get_database)):
     if not token:
         raise HTTPException(status_code=401, detail="Auth Required")
-    username = await username_from_token(token)
-    if not username:
-        raise HTTPException(status_code=401, detail="Cannot find username from token")
+    user_role = await user_role_from_token(token)
+    if not user_role:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
-    user = await find_user(db, username)
+    user = await find_user(db, user_role.user_id)
     if not user:
         raise HTTPException(status_code=401, detail="User does not exist")
     return user
